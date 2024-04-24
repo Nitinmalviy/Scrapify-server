@@ -48,8 +48,8 @@ export const addProduct = async (request, response, next) => {
             commission
         } = request.body;
 
-        const thumbnail = request.files['thumbnail'][0].path;
-        const images = request.files['images'].map(file => file.path);
+        const thumbnail = request.files['thumbnail'][0].filename;
+        const images = request.files['images'].map(file => file.filename);
         const newProduct = {
             productName,
             description,
@@ -94,8 +94,15 @@ export const productList = (request, response, next) => {
         path: "review.userId",
         select: "-password",
     })
-        .then(result => {
-            return response.status(200).json({ products: result });
+        .then(products => {
+            const baseUrl = 'http://localhost:8000/images/';
+            const productsWithUrl = products.map(product => ({
+                ...product.toObject(),
+                thumbnail: baseUrl + product.thumbnail,
+                images: product.images.map(image => baseUrl + image),
+            }));
+
+            return response.status(200).json({ product: productsWithUrl });
         }).catch(err => {
             return response.status(500).json({ error: "product are not available" });
         })
@@ -108,7 +115,7 @@ export const fetchProductById = async (request, response, next) => {
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
-        await product.find({ _id: id }).populate({
+        await product.findOne({ _id: id }).populate({
             path: "sellerId",
             select: "-password",
         }).populate({
@@ -116,6 +123,10 @@ export const fetchProductById = async (request, response, next) => {
             select: "-password",
         })
             .then(result => {
+                const baseUrl = 'http://localhost:8000/images/';
+                console.log(result.thumbnail);
+                result.thumbnail = baseUrl + result.thumbnail;
+                result.images = result.images.map(image => baseUrl + image);
                 return response.status(200).json({ product: result });
             })
             .catch(err => {
@@ -130,7 +141,7 @@ export const fetchProductById = async (request, response, next) => {
 export const fetchProductByName = async (request, response, next) => {
     try {
         let name = request.params.name;
-        const errors = await validationResult(name);
+        const errors = validationResult(name);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
@@ -141,8 +152,16 @@ export const fetchProductByName = async (request, response, next) => {
             path: "review.userId",
             select: "-password",
         })
-            .then(result => {
-                return response.status(200).json({ product: result });
+            .then(products => {
+
+                // Path concate 
+                const baseUrl = 'http://localhost:8000/images/';
+                const productsWithUrl = products.map(product => ({
+                    ...product.toObject(),
+                    thumbnail: baseUrl + product.thumbnail,
+                    images: product.images.map(image => baseUrl + image),
+                }));
+                return response.status(200).json({ product: productsWithUrl });
             })
             .catch(err => {
                 return response.status(500).json({ error: "product are not available" });
@@ -167,8 +186,15 @@ export const fetchProductByCategory = async (request, response, next) => {
             path: "review.userId",
             select: "-password",
         })
-            .then(result => {
-                return response.status(200).json({ product: result });
+            .then(products => {
+                const baseUrl = 'http://localhost:8000/images/';
+                const productsWithUrl = products.map(product => ({
+                    ...product.toObject(),
+                    thumbnail: baseUrl + product.thumbnail,
+                    images: product.images.map(image => baseUrl + image),
+                }));
+
+                return response.status(200).json({ product: productsWithUrl });
             })
             .catch(err => {
                 return response.status(500).json({ error: "product are not available" });
@@ -182,7 +208,7 @@ export const fetchProductByCategory = async (request, response, next) => {
 export const fetchProductByPrice = async (request, response, next) => {
     try {
         let price = request.params.price;
-        const errors = await validationResult(price);
+        const errors = validationResult(price);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
@@ -193,8 +219,17 @@ export const fetchProductByPrice = async (request, response, next) => {
             path: "review.userId",
             select: "-password",
         })
-            .then(result => {
-                return response.status(200).json({ product: result });
+            .then(products => {
+
+                const baseUrl = 'http://localhost:8000/images/';
+                const productsWithUrl = products.map(product => ({
+                    ...product.toObject(),
+                    thumbnail: baseUrl + product.thumbnail,
+                    images: product.images.map(image => baseUrl + image),
+                }));
+
+
+                return response.status(200).json({ product: productsWithUrl });
             })
             .catch(err => {
                 return response.status(500).json({ error: "product are not available" });
@@ -260,6 +295,46 @@ export const updateProduct = async (request, response, next) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 }
+
+export const searchProduct = async (request, response, next) => {
+    try {
+        const { query, maxPrice, minPrice } = request.body;
+
+        const searchCriteria = {
+            $or: [
+                { productName: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } },
+                { category: { $regex: query, $options: 'i' } },
+            ],
+            price: { $gte: minPrice || 0, $lte: maxPrice || Infinity },
+        };
+        const products = await product.find(searchCriteria).populate({
+            path: "sellerId",
+            select: "-password",
+        }).populate({
+            path: "review.userId",
+            select: "-password",
+        })
+        if (products.length > 0) {
+            const baseUrl = 'http://localhost:8000/images/';
+            const productsWithUrl = products.map(product => ({
+                ...product.toObject(),
+                thumbnail: baseUrl + product.thumbnail,
+                images: product.images.map(image => baseUrl + image),
+            }));
+            return response.status(200).json({ products: productsWithUrl });
+        } else {
+            return response.status(404).json({ message: 'Products not found' });
+        }
+    } catch (error) {
+        console.error('Error searching products:', error);
+        response.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+
+
 
 // Updating rating
 export const rateProduct = async (request, response, next) => {

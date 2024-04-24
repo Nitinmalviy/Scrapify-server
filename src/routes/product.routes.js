@@ -2,7 +2,7 @@ import express from "express";
 import { body, param } from "express-validator";
 import { upload } from "../middlewares/multer.middleware.js";
 
-import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview } from "../controllers/product.controller.js";
+import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview, searchProduct } from "../controllers/product.controller.js";
 
 const productRouter = express.Router();
 
@@ -59,11 +59,12 @@ productRouter.delete("/removeProductByName/:name",
     removeProductByName);
 
 productRouter.put("/updateProduct", updateProduct);
+productRouter.get("/searchProduct", searchProduct);
 
-// router.get("/searchProduct",searchProduct);
-// router.delete("/removeImage",removeImage);
-// router.put("/updateImage",updateImage);
-// router.post("/addImage",addImage);
+
+// productRouter.delete("/removeImage",removeImage);
+// productRouter.put("/updateImage",updateImage);
+// productRouter.post("/addImage",addImage);
 
 
 productRouter.post("/addRating", rateProduct);
