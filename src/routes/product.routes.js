@@ -2,7 +2,7 @@ import express from "express";
 import { body, param } from "express-validator";
 import { upload } from "../middlewares/multer.middleware.js";
 
-import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview, searchProduct } from "../controllers/product.controller.js";
+import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview, searchProduct, updateImages, fetchProductByUserId } from "../controllers/product.controller.js";
 
 const productRouter = express.Router();
 
@@ -38,6 +38,13 @@ productRouter.get("/fetchProductById/:id",
     param("id", "product id is required").notEmpty(),
     fetchProductById);
 
+
+productRouter.get("/fetchProductByUserId/:userId",
+    param("userId", "userId id is required").notEmpty(),
+    fetchProductByUserId);
+
+
+
 productRouter.get("/fetchProductByName/:name",
     param("name", "product name is required").notEmpty(),
     fetchProductByName);
@@ -62,8 +69,14 @@ productRouter.put("/updateProduct", updateProduct);
 productRouter.get("/searchProduct", searchProduct);
 
 
+productRouter.put("/updateImages/:productId", upload.fields([
+    { name: 'thumbnail', maxCount: 1 }, // For single thumbnail upload
+    { name: 'images', maxCount: 5 }     // For multiple images (up to 5) upload
+]), updateImages);
+
+
 // productRouter.delete("/removeImage",removeImage);
-// productRouter.put("/updateImage",updateImage);
+
 // productRouter.post("/addImage",addImage);
 
 
