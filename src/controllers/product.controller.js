@@ -47,7 +47,6 @@ export const addProduct = async (request, response, next) => {
             shippingCost,
             commission
         } = request.body;
-
         const thumbnail = request.files['thumbnail'][0].filename;
         const images = request.files['images'].map(file => file.filename);
         const newProduct = {
@@ -137,6 +136,37 @@ export const fetchProductById = async (request, response, next) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 }
+
+export const fetchProductByUserId = async (request, response, next) => {
+    try {
+        let userId = request.params.userId;
+        const errors = validationResult(userId);
+        if (!errors.isEmpty()) {
+            return response.status(400).json({ errors: errors.array() });
+        }
+        await product.findOne({ sellerId: userId }).populate({
+            path: "sellerId",
+            select: "-password",
+        }).populate({
+            path: "review.userId",
+            select: "-password",
+        })
+            .then(result => {
+                const baseUrl = 'http://localhost:8000/images/';
+                console.log(result.thumbnail);
+                result.thumbnail = baseUrl + result.thumbnail;
+                result.images = result.images.map(image => baseUrl + image);
+                return response.status(200).json({ product: result });
+            })
+            .catch(err => {
+                return response.status(500).json({ error: "product are not available" });
+            })
+    }
+    catch (err) {
+        return response.status(500).json({ error: "Internal server error" });
+    }
+}
+
 //--------
 export const fetchProductByName = async (request, response, next) => {
     try {
@@ -333,9 +363,6 @@ export const searchProduct = async (request, response, next) => {
 };
 
 
-
-
-
 // Updating rating
 export const rateProduct = async (request, response, next) => {
     try {
@@ -424,6 +451,43 @@ export const updateReview = async (request, response, next) => {
     } catch (error) {
         console.error("Error updating review:", error);
         return response.status(500).json({ error: 'Error occurred while updating review' });
+    }
+};
+
+
+// Update image and thumbnail
+export const updateImages = async (request, response) => {
+    try {
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) {
+            return response.status(400).json({ errors: errors.array() });
+        }
+        const { productId } = request.params;
+        const { files } = request;
+        if (!files || !files['thumbnail'] || !files['images']) {
+            return response.status(400).json({ error: 'Both thumbnail and images are required' });
+        }
+
+        const thumbnail = files['thumbnail'][0].filename;
+        const images = files['images'].map(file => file.filename);
+
+        const updatedProduct = await product.findByIdAndUpdate(
+            productId,
+            { images, thumbnail },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return response.status(404).json({ message: 'Product not found' });
+        }
+        const baseUrl = 'http://localhost:8000/images/';
+        updatedProduct.thumbnail = baseUrl + updatedProduct.thumbnail;
+        updatedProduct.images = updatedProduct.images.map(image => baseUrl + image);
+
+        return response.status(200).json({ product: updatedProduct });
+    } catch (error) {
+        console.error('Error updating product images and thumbnail:', error);
+        response.status(500).json({ error: 'Internal Server Error' });
     }
 };
 

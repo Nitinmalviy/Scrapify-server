@@ -80,6 +80,29 @@ export const getProductById = async (request, response, next) => {
   }
 };
 
+// get Scrap Product by userid
+export const getProductByUserId = async (request, response, next) => {
+  try {
+    const userId = request.params.userId;
+    let result = await ScrapProduct.findOne({ seller: userId }).populate({
+      path: "seller",
+      select: "-password",
+    });
+    if (!result) {
+      return response.status(400).json({ massage: "Id not Found" });
+    }
+    const baseUrl = 'http://localhost:8000/images/';
+    console.log(result.thumbnail);
+    result.thumbnail = baseUrl + result.thumbnail;
+    result.images = result.images.map(image => baseUrl + image);
+    return response.status(200).json({ product: result });
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
 export const getProductByName = async (request, response, next) => {
   try {
     const title = request.params.name;
@@ -177,27 +200,7 @@ export const deleteProductById = async (request, response, next) => {
   }
 };
 
-// Panding (In progress)................
-// export const updateProductById = async (request, response, next) => {
-//   try {
-//     const productId = request.body.id;
-//     const updates = request.body;
-//     const product = await ScrapProduct.findById(productId);
-//     if (!product) {
-//       return response.status(404).json({ message: "Product not found" });
-//     }
-//     Object.keys(updates).forEach((key) => {
-//       if (updates[key] !== undefined) {
-//         product[key] = updates[key];
-//       }
-//     });
-//     const updatedProduct = await product.save();
-//     return response.status(200).json({ product: updatedProduct });
-//   } catch (error) {
-//     console.error(error);
-//     return response.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+
 export const updateProduct = async (request, response, next) => {
   try {
     let {

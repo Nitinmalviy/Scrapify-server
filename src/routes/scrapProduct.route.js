@@ -8,6 +8,7 @@ import {
   getProductByCategory,
   getProductById,
   getProductByName,
+  getProductByUserId,
   getProductList,
   searchProduct,
   updateProduct,
@@ -25,6 +26,7 @@ scrapProductRouter.post("/addProduct", upload.fields([
 
 scrapProductRouter.get("/getProductList", getProductList);
 scrapProductRouter.get("/getProduct-byid/:id", getProductById);
+scrapProductRouter.get("/getProduct-byuserid/:userId", getProductByUserId);
 scrapProductRouter.get("/getProduct-byname/:name", getProductByName);
 scrapProductRouter.get("/getProduct-bycategory/:categoryName", getProductByCategory);
 scrapProductRouter.get("/search-product", searchProduct);
