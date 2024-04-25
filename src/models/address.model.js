@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema({
-    user: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
-        required: true
+        required: true,
+        unique: true,
     },
     recipientName: {
         type: String,
