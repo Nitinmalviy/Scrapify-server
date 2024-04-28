@@ -13,7 +13,11 @@ import AddressRouter from "./routes/address.routes.js";
 import AdminNotificationRouter from "./routes/AdminNotification.routes.js";
 import MessageRouter from "./routes/message.routes.js";
 import VahicleRouter from "./routes/vahicle.routes.js";
+<<<<<<< HEAD
 import adminRouter from "./routes/admin.route.js"
+=======
+import cartRouter from "./routes/cart.route.js";
+>>>>>>> 261a539dc18aed06775efc7fa7ccfa7c89a5aa9c
 
 
 // Work -------------
@@ -74,9 +78,13 @@ app.use("/api/Message", MessageRouter);
 
 app.use("/api/Vahicle", VahicleRouter);
 
+<<<<<<< HEAD
 
 
 
 // _________________________ADMIN WORK______________________________
 
 app.use("/api/admin", adminRouter)
+=======
+app.use("/api/cart",cartRouter);
+>>>>>>> 261a539dc18aed06775efc7fa7ccfa7c89a5aa9c
