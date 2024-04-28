@@ -10,3 +10,4 @@ export const addVahicle = async (request, response) => {
         response.status(500).json({ message: "Internal server error" });
     }
 }
+
