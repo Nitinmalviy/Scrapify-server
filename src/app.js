@@ -13,7 +13,10 @@ import AddressRouter from "./routes/address.routes.js";
 import AdminNotificationRouter from "./routes/AdminNotification.routes.js";
 import MessageRouter from "./routes/message.routes.js";
 import VahicleRouter from "./routes/vahicle.routes.js";
+import adminRouter from "./routes/admin.route.js"
 
+
+// Work -------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -64,8 +67,16 @@ export default app;
 app.use("/api/address", AddressRouter);
 
 
+//Admin  Notification Rout
 app.use("/api/AdminNotification", AdminNotificationRouter);
 
 app.use("/api/Message", MessageRouter);
 
 app.use("/api/Vahicle", VahicleRouter);
+
+
+
+
+// _________________________ADMIN WORK______________________________
+
+app.use("/api/admin", adminRouter)
