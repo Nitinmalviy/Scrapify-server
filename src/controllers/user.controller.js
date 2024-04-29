@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import OTP from "../models/otp.model.js";
+
+import User from "../models/user.model.js";
+
 // User(Customer) otp send
 export const saveOTP = async (request, response, next) => {
   try {
