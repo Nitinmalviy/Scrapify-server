@@ -8,7 +8,7 @@ export const addToCart = async (request, response, next) => {
         if (cart) {
             let status = cart.cartItems.some((product) => product.productId == productId);
             if (status) {
-                return response.status(200).json({ message: "Product already added to your cart." });
+                return response.status(409).json({ error: "Product already added to your cart." });
             } else {
                 cart.cartItems.push({ productId });
                 await cart.save();

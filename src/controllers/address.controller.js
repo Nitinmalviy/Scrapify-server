@@ -7,11 +7,15 @@ export const addAddress = async (request, response) => {
         if (!userId || !recipientName || !streetAddress || !city || !state || !postalCode || !country) {
             return response.status(400).json({ error: 'Missing required fields' });
         }
+        const existAddress = await Address.findOne({ userId });
+        if (existAddress) {
+            return response.status(409).json({ error: 'UserAddress alredy Exist' });
+        }
         const result = await Address.create({ userId, recipientName, streetAddress, city, state, postalCode, country });
         return response.status(201).json({ message: "Address Add Succesfully", address: result });
 
     } catch (error) {
-        console.log("Error in Add Product  : ", error);
+        console.log("Error in Add Address   : ", error);
         return response.status(500).json("Internal server error");
     }
 }
