@@ -11,3 +11,18 @@ export const addVahicle = async (request, response) => {
     }
 }
 
+
+export const getVehicleList = async (request, response) => {
+    try {
+        Vehicle.find()
+            .then(result => {
+                return response.status(200).json({ vehicleList: result });
+            }).catch(err => {
+                return response.status(500).json({ error: "Internal server error" });
+            });
+    }
+    catch (err) {
+        console.log(err)
+        response.status(500).json({ error: "Internal server error" });
+    }
+}

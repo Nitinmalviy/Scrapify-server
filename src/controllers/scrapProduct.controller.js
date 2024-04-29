@@ -214,21 +214,31 @@ export const deleteProductById = async (request, response, next) => {
 export const getProductByUserId = async (request, response, next) => {
   try {
     const userId = request.params.userId;
-    let result = await ScrapProduct.findOne({ seller: userId }).populate({
-      path: "seller",
-      select: "-password",
-    });
-    if (!result) {
-      return response.status(400).json({ massage: "Id not Found" });
+
+    // Validate userId
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
     }
+    // Find products by sellerId
+    const products = await ScrapProduct.find({ seller: userId })
+      .populate({
+        path: 'seller',
+        select: '-password'
+      })
+
+    // Concatenate base URL with thumbnail and images for each product
     const baseUrl = 'http://localhost:8000/images/';
-    console.log(result.thumbnail);
-    result.thumbnail = baseUrl + result.thumbnail;
-    result.images = result.images.map(image => baseUrl + image);
-    return response.status(200).json({ product: result });
+    const formattedProducts = products.map(product => ({
+      ...product._doc,
+      thumbnail: baseUrl + product.thumbnail,
+      images: product.images.map(image => baseUrl + image)
+    }));
+
+    return response.status(200).json({ products: formattedProducts });
   } catch (error) {
-    console.log(error);
-    return response.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching products:', error);
+    return response.status(500).json({ error: 'Internal server error' });
   }
 };
 

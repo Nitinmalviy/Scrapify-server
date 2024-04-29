@@ -178,7 +178,6 @@ export const fetchProductByUserId = async (request, response, next) => {
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
-
         // Find products by sellerId
         const products = await product.find({ sellerId: userId })
             .populate({
