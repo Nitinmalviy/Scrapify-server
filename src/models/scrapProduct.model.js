@@ -71,9 +71,9 @@ const ScrapProductSchema = new mongoose.Schema(
     ],
     status: {
       type: String,
-      enum: ["Done", "pending"],
-      required: true,
-      trim: true,
+      enum: ['Done', 'pending'],
+      default: 'pending',
+      trim: true
     },
   },
   { timestamps: true }

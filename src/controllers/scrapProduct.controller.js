@@ -1,7 +1,7 @@
-import { validationResult } from "express-validator";
 import ScrapProduct from "../models/scrapProduct.model.js";
 export const addScrapProduct = async (request, response, next) => {
   try {
+    console.log(request.body);
     if (!request.body) {
       return response.status(400).json({ error: "Invalid data" });
     }
@@ -13,7 +13,6 @@ export const addScrapProduct = async (request, response, next) => {
       price,
       seller,
       location,
-      status,
     } = request.body;
     // Get path of uploaded thumbnail
     const thumbnail = request.files['thumbnail'][0].filename;
@@ -28,7 +27,6 @@ export const addScrapProduct = async (request, response, next) => {
       thumbnail,
       images,
       location,
-      status,
     });
 
     await ScrapProduct.create(newScrapProduct);
@@ -153,35 +151,35 @@ export const getProductByCategory = async (request, response, next) => {
 
 export const searchProduct = async (request, response, next) => {
   try {
-      const { query, maxPrice, minPrice } = request.body;
+    const { query, maxPrice, minPrice } = request.body;
 
-      const searchCriteria = {
-          $or: [
-              { title: { $regex: query, $options: 'i' } },
-              { description: { $regex: query, $options: 'i' } },
-              { categoryName: { $regex: query, $options: 'i' } },
-          ],
-          price: { $gte: minPrice || 0, $lte: maxPrice || Infinity },
-      };
-      const products = await ScrapProduct.find(searchCriteria)
-          .populate({
-              path: 'seller',
-              select: '-password',
-          });
-      if (products.length > 0) {
-          const baseUrl = 'http://localhost:8000/images/';
-          const productsWithUrl = products.map(product => ({
-              ...product.toObject(),
-              thumbnail: baseUrl + product.thumbnail,
-              images: product.images.map(image => baseUrl + image),
-          }));
-          return response.status(200).json({ products: productsWithUrl });
-      } else {
-          return response.status(404).json({ message: 'Products not found' });
-      }
+    const searchCriteria = {
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } },
+        { categoryName: { $regex: query, $options: 'i' } },
+      ],
+      price: { $gte: minPrice || 0, $lte: maxPrice || Infinity },
+    };
+    const products = await ScrapProduct.find(searchCriteria)
+      .populate({
+        path: 'seller',
+        select: '-password',
+      });
+    if (products.length > 0) {
+      const baseUrl = 'http://localhost:8000/images/';
+      const productsWithUrl = products.map(product => ({
+        ...product.toObject(),
+        thumbnail: baseUrl + product.thumbnail,
+        images: product.images.map(image => baseUrl + image),
+      }));
+      return response.status(200).json({ products: productsWithUrl });
+    } else {
+      return response.status(404).json({ message: 'Products not found' });
+    }
   } catch (error) {
-      console.error('Error searching products:', error);
-      response.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error searching products:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
