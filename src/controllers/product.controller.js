@@ -137,37 +137,74 @@ export const fetchProductById = async (request, response, next) => {
     }
 }
 
+// export const fetchProductByUserId = async (request, response, next) => {
+//     try {
+//         let userId = request.params.userId;
+//         const errors = validationResult(userId);
+//         if (!errors.isEmpty()) {
+//             return response.status(400).json({ errors: errors.array() });
+//         }
+//         await product.find({ sellerId: userId }).populate({
+//             path: "sellerId",
+//             select: "-password",
+//         }).populate({
+//             path: "review.userId",
+//             select: "-password",
+//         })
+//             .then(result => {
+//                 // const baseUrl = 'http://localhost:8000/images/';
+//                 // console.log(result.thumbnail);
+//                 // result.thumbnail = baseUrl + result.thumbnail;
+//                 // result.images = result.images.map(image => baseUrl + image);
+//                 return response.status(200).json({ product: result });
+//             })
+//             .catch(err => {
+//                 return response.status(500).json({ error: "product are not available" });
+//             })
+//     }
+//     catch (err) {
+//         return response.status(500).json({ error: "Internal server error" });
+//     }
+// }
+
+//--------
+
 export const fetchProductByUserId = async (request, response, next) => {
     try {
-        let userId = request.params.userId;
-        const errors = validationResult(userId);
+        const userId = request.params.userId;
+
+        // Validate userId
+        const errors = validationResult(request);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
-        await product.findOne({ sellerId: userId }).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
-            path: "review.userId",
-            select: "-password",
-        })
-            .then(result => {
-                const baseUrl = 'http://localhost:8000/images/';
-                console.log(result.thumbnail);
-                result.thumbnail = baseUrl + result.thumbnail;
-                result.images = result.images.map(image => baseUrl + image);
-                return response.status(200).json({ product: result });
-            })
-            .catch(err => {
-                return response.status(500).json({ error: "product are not available" });
-            })
-    }
-    catch (err) {
-        return response.status(500).json({ error: "Internal server error" });
-    }
-}
 
-//--------
+        // Find products by sellerId
+        const products = await product.find({ sellerId: userId })
+            .populate({
+                path: 'sellerId',
+                select: '-password'
+            })
+            .populate({
+                path: 'review.userId',
+                select: '-password'
+            });
+
+        // Concatenate base URL with thumbnail and images for each product
+        const baseUrl = 'http://localhost:8000/images/';
+        const formattedProducts = products.map(product => ({
+            ...product._doc,
+            thumbnail: baseUrl + product.thumbnail,
+            images: product.images.map(image => baseUrl + image)
+        }));
+
+        return response.status(200).json({ products: formattedProducts });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return response.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 export const fetchProductByName = async (request, response, next) => {
     try {
         let name = request.params.name;

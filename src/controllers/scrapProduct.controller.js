@@ -6,6 +6,8 @@ import AdminNotification from "../models/AdminNotification.model.js";
 
 export const addScrapProduct = async (request, response, next) => {
   try {
+    console.log(request.body);
+    console.log(request.files);
     if (!request.body) {
       return response.status(400).json({ error: "Invalid data" });
     }
@@ -16,9 +18,23 @@ export const addScrapProduct = async (request, response, next) => {
       condition,
       price,
       seller,
-      location,
+      city,
+      pincode,
+      state,
+      landmark,
+      fullAddress,
       status,
     } = request.body;
+
+    console.log(state);
+    const locations = [
+      {
+        city,
+        pincode,
+        state,
+        landmark,
+        fullAddress,
+      }]
     // Get path of uploaded thumbnail
     const thumbnail = request.files['thumbnail'][0].filename;
     const images = request.files['images'].map(file => file.filename);
@@ -31,9 +47,12 @@ export const addScrapProduct = async (request, response, next) => {
       seller,
       thumbnail,
       images,
-      location,
+      location: locations,
       status,
     });
+
+    // const locatio = [{city},{}]
+
 
     const product = await ScrapProduct.create(newScrapProduct);
     console.log();
