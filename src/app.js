@@ -9,18 +9,22 @@ import NotificationRouter from "./routes/notification.route.js";
 import OrderRouter from "./routes/order.routes.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import AddressRouter from "./routes/address.routes.js";
+import AdminNotificationRouter from "./routes/AdminNotification.routes.js";
+import MessageRouter from "./routes/message.routes.js";
+import VahicleRouter from "./routes/vahicle.routes.js";
 
+import adminRouter from "./routes/admin.route.js"
+
+import cartRouter from "./routes/cart.route.js";
+
+
+// Work -------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(
-//   cors({
-//     origin: process.env.CORS_ORIGIN,
-//     credentials: true,
-//   })
-// );
 
 app.use(
   cors()
@@ -60,3 +64,25 @@ app.use("/api/notification", NotificationRouter);
 // Order route
 app.use("/api/order", OrderRouter);
 export default app;
+
+
+// Address routes
+app.use("/api/address", AddressRouter);
+
+
+//Admin  Notification Rout
+app.use("/api/AdminNotification", AdminNotificationRouter);
+
+app.use("/api/Message", MessageRouter);
+
+app.use("/api/Vahicle", VahicleRouter);
+
+
+
+
+
+// _________________________ADMIN WORK______________________________
+
+app.use("/api/admin", adminRouter)
+
+app.use("/api/cart",cartRouter);
