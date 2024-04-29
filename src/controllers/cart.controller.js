@@ -5,7 +5,6 @@ export const addToCart = async (request, response, next) => {
     try {
         let { userId, productId } = request.body;
         let cart = await Cart.findOne({ userId });
-
         if (cart) {
             let status = cart.cartItems.some((product) => product.productId == productId);
             if (status) {
@@ -27,8 +26,10 @@ export const addToCart = async (request, response, next) => {
 //------
 export const fetchCart = (request, response, next) => {
     let userId = request.params.userId;
-    Cart.find({ userId: userId }).populate("userId").populate("cartItems.productId")
+    Cart.find({ userId: userId }).populate("cartItems.productId")
         .then((result) => {
+
+
             return response.status(200).json({ cart: result });
         })
         .catch((err) => {
@@ -38,7 +39,7 @@ export const fetchCart = (request, response, next) => {
 }
 //--------
 export const removeCartItems = (request, response, next) => {
-    let { userId, productId } = request.body;
+    const { userId, productId } = request.body;
     Cart.updateOne({ userId: userId }, {
         $pull: { cartItems: { productId: productId } }
     })
