@@ -5,6 +5,11 @@ const adminSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  contact: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   email: {
     type: String,
     unique: true,
@@ -20,4 +25,4 @@ const adminSchema = new mongoose.Schema({
 
 const Admin = mongoose.model("admin", adminSchema);
 
-export default Admin;
+export default Admin;

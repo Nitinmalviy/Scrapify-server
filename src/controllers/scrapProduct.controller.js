@@ -208,7 +208,6 @@ export const deleteProductById = async (request, response, next) => {
   }
 };
 
-
 // get Scrap Product by userid
 export const getProductByUserId = async (request, response, next) => {
   try {

@@ -23,7 +23,7 @@ export const addAddress = async (request, response) => {
 export const getAddressByUserId = async (request, response) => {
     try {
         const userId = request.params.userId;
-        const address = await Address.find({ userId });
+        const address = await Address.findOne({ userId });
         if (!address) return response.status(404).json({ error: "userId not found" });
         return response.status(201).json(address);
     } catch (error) {
