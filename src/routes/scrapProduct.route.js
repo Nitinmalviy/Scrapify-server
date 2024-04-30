@@ -1,7 +1,4 @@
 import express from "express";
-import { body, param } from "express-validator";
-import multer from "multer";
-import path from "path";
 import {
   addScrapProduct,
   deleteProductById,
