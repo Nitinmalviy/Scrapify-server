@@ -10,7 +10,6 @@ import {
   searchProduct,
   updateProduct,
 } from "../controllers/scrapProduct.controller.js";
-import { auth } from "../middlewares/authorize.js";
 import { upload } from "../middlewares/multer.middleware.js";
 // const upload = multer({dest: "public/images/"});
 const scrapProductRouter = express.Router();

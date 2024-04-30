@@ -22,7 +22,6 @@ export const addScrapProduct = async (request, response, next) => {
       state,
       landmark,
       fullAddress,
-      status,
     } = request.body;
 
     console.log(state);
@@ -47,7 +46,6 @@ export const addScrapProduct = async (request, response, next) => {
       thumbnail,
       images,
       location: locations,
-      status,
     });
 
     // const locatio = [{city},{}]
@@ -107,7 +105,7 @@ export const getProductById = async (request, response, next) => {
     return response.status(200).json({ product: result });
   } catch (error) {
     console.log(error);
-    return response.status(500).json({ error: "Internal Server Error" });
+    return response.status(500).json({ error: `${error}Internal Server Error`, });
   }
 };
 
@@ -215,10 +213,10 @@ export const getProductByUserId = async (request, response, next) => {
     const userId = request.params.userId;
 
     // Validate userId
-    const errors = validationResult(request);
-    if (!errors.isEmpty()) {
-      return response.status(400).json({ errors: errors.array() });
-    }
+    // const errors = validationResult(request);
+    // if (!errors.isEmpty()) {
+    //   return response.status(400).json({ errors: errors.array() });
+    // }
     // Find products by sellerId
     const products = await ScrapProduct.find({ seller: userId })
       .populate({
