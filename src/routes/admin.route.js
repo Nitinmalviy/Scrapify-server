@@ -5,7 +5,8 @@ import {
     signIn,
     UpdateAdminname,
     removeAdminbyId,
-    getadminList
+    getadminList,
+    getadminById
 } from "../controllers/admin.controller.js";
 
 const adminRouter = express.Router();
@@ -13,6 +14,9 @@ const adminRouter = express.Router();
 adminRouter.post(
     "/register",
     body("adminname", "Adminname required").notEmpty(),
+    body("adminname", "Only Alphabatics name").isAlpha(),
+    body("contact", "contact number required").notEmpty(),
+    body("contact", "Invalid Contact Number").isNumeric(),
     body("email", "Invalid email").isEmail(),
     body("email", "Email id is required").notEmpty(),
     body("password", "Password is required").notEmpty(),
@@ -28,7 +32,12 @@ adminRouter.post(
     signIn
 );
 
-adminRouter.post(
+adminRouter.get(
+    "/getAdmin-byid/:adminId",
+    param("adminId", "AdminId Required").notEmpty(),
+    getadminById
+);
+adminRouter.put(
     "/change-adminname",
     body("adminname", "Adminname required").notEmpty(),
     body("adminId", "AdminId required").notEmpty(),
