@@ -65,7 +65,7 @@ export const UpdateAdminname = async (request, response, next) => {
         const { adminname, adminId } = request.body;
         const result = await Admin.updateOne(
             { _id: adminId },
-            { $set: { adminname } }
+            { $set: { adminname, contact } }
         );
         if (result.modifiedCount) {
             return response.status(200).json({ message: "Updated successfully" });
@@ -78,6 +78,7 @@ export const UpdateAdminname = async (request, response, next) => {
     }
 };
 
+// Admin Remove
 export const removeAdminbyId = async (request, response, next) => {
     try {
         let id = request.params.id;
@@ -115,6 +116,24 @@ export const getadminList = async (request, response, next) => {
     }
 };
 
+// Admin get by id
+export const getadminById = async (request, response, next) => {
+    try {
+        let adminId = request.params.adminId;
+        const result = await Admin.findOne({ _id: adminId });
+        if (result) {
+            result.password = undefined;
+            return response.status(200).json({ admin: result });
+        } else {
+            return response.status(400).json({ message: "AdminId Not Found" });
+        }
+    } catch (error) {
+        console.log(error);
+        return response.status(500).json("Internal server Error");
+    }
+};
+
+// Token Generator
 const generateToken = (email) => {
     let payload = { subject: email };
     return jwt.sign(payload, process.env.JWT_SECRET);
