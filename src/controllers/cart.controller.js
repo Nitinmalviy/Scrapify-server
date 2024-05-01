@@ -105,4 +105,33 @@ export const decreaseQuantity = (request, response, next) => {
 };
 
 
+export const updateQunatity = async (request, response) => {
+    try {
+        const productId = request.body.productId;
+        const userId = request.body.userId;
+        const quantity = request.body.quantity;
+        const updatedProduct = await Cart.findOneAndUpdate(
+            {
+                userId: userId,
+                'cartItems.productId': productId
+            },
+            {
+                $set: {
+                    'cartItems.$.quantity': quantity
+                }
+            },
+            { new: true }
+
+        );
+        if (!updatedProduct) {
+            console.log(updatedProduct);
+            return response.status(404).json({ error: "Product Not found" });
+        }
+        return response.status(201).json({ message: "Quantity Update succeffully" });
+    } catch (error) {
+
+        console.log("error in uodate quantity", error);
+        return response.status(500).json({ error: "Internal server error" });
+    }
+}
 
