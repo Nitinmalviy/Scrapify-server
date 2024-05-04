@@ -2,7 +2,7 @@ import express from "express";
 import { body, param } from "express-validator";
 import { upload } from "../middlewares/multer.middleware.js";
 
-import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview, searchProduct, updateImages, fetchProductByUserId } from "../controllers/product.controller.js";
+import { addAllProduct, fetchProductByCategory, fetchProductById, fetchProductByName, fetchProductByPrice, productList, removeProductById, removeProductByName, updateProduct, addProduct, rateProduct, updateReview, searchProduct, updateImages } from "../controllers/product.controller.js";
 
 const productRouter = express.Router();
 
@@ -18,16 +18,11 @@ productRouter.post("/addProduct",
     body("quantity", "qunatity is required").notEmpty(),
     body("quantity", "only digit allowed").isNumeric(),
     body("weight", "only digit allowed").isNumeric(),
-    body("sellerId", "seller id is required").notEmpty(),
     body("category", "category is required").notEmpty(),
     body("thumbnail", "thumbnail is required").notEmpty(),
     body("rating", "only digit allowed").isNumeric(),
     body("discountPercentage", "only digit allowed").isNumeric(),
-    body("userId", "user id required").notEmpty(),
-    body("userReview", "user review is required").notEmpty(),
     body("images", "images is required").notEmpty(),
-    body("shippingCost", "shipping Cost is required").isNumeric(),
-    body("commission", "commission is required").isNumeric(),
     addProduct
 );
 
@@ -37,13 +32,6 @@ productRouter.get("/productList", productList);
 productRouter.get("/fetchProductById/:id",
     param("id", "product id is required").notEmpty(),
     fetchProductById);
-
-
-productRouter.get("/fetchProductByUserId/:userId",
-    param("userId", "userId id is required").notEmpty(),
-    fetchProductByUserId);
-
-
 
 productRouter.get("/fetchProductByName/:name",
     param("name", "product name is required").notEmpty(),
