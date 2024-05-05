@@ -26,11 +26,6 @@ const productSchema = new mongoose.Schema({
         default: 0,
         required: true,
     },
-    sellerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-        required: true,
-    },
     category: {
         type: String,
         ref: "category",
@@ -41,11 +36,6 @@ const productSchema = new mongoose.Schema({
         trim: true,
         required: true,
     },
-    brand: {
-        type: String,
-        trim: true,
-    },
-
     discountPercentage: {
         type: Number,
         default: 0,
@@ -88,10 +78,6 @@ const productSchema = new mongoose.Schema({
 
     images: [],
     shippingCost: {
-        type: Number,
-        default: 0,
-    },
-    commission: {
         type: Number,
         default: 0,
     },

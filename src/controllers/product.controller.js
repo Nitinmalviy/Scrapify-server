@@ -31,21 +31,17 @@ export const addProduct = async (request, response, next) => {
         if (!errors.isEmpty()) {
             return response.status(401).json({ errors: errors.array() });
         }
-
         const {
             productName,
             description,
             price,
             quantity,
             weight,
-            sellerId,
             category,
-            brand,
             rating,
             discountPercentage,
             review,
             shippingCost,
-            commission
         } = request.body;
         const thumbnail = request.files['thumbnail'][0].filename;
         const images = request.files['images'].map(file => file.filename);
@@ -55,14 +51,11 @@ export const addProduct = async (request, response, next) => {
             price,
             quantity,
             weight,
-            sellerId,
             category,
-            brand,
             rating,
             discountPercentage,
             review,
             shippingCost,
-            commission,
             thumbnail,
             images,
         }
@@ -87,9 +80,6 @@ export const addProduct = async (request, response, next) => {
 //----------
 export const productList = (request, response, next) => {
     product.find().populate({
-        path: "sellerId",
-        select: "-password",
-    }).populate({
         path: "review.userId",
         select: "-password",
     })
@@ -100,7 +90,6 @@ export const productList = (request, response, next) => {
                 thumbnail: baseUrl + product.thumbnail,
                 images: product.images.map(image => baseUrl + image),
             }));
-
             return response.status(200).json({ product: productsWithUrl });
         }).catch(err => {
             return response.status(500).json({ error: "product are not available" });
@@ -110,14 +99,11 @@ export const productList = (request, response, next) => {
 export const fetchProductById = async (request, response, next) => {
     try {
         let id = request.params.id;
-        const errors = await validationResult(id);
+        const errors = validationResult(id);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
         await product.findOne({ _id: id }).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
             path: "review.userId",
             select: "-password",
         })
@@ -137,73 +123,6 @@ export const fetchProductById = async (request, response, next) => {
     }
 }
 
-// export const fetchProductByUserId = async (request, response, next) => {
-//     try {
-//         let userId = request.params.userId;
-//         const errors = validationResult(userId);
-//         if (!errors.isEmpty()) {
-//             return response.status(400).json({ errors: errors.array() });
-//         }
-//         await product.find({ sellerId: userId }).populate({
-//             path: "sellerId",
-//             select: "-password",
-//         }).populate({
-//             path: "review.userId",
-//             select: "-password",
-//         })
-//             .then(result => {
-//                 // const baseUrl = 'http://localhost:8000/images/';
-//                 // console.log(result.thumbnail);
-//                 // result.thumbnail = baseUrl + result.thumbnail;
-//                 // result.images = result.images.map(image => baseUrl + image);
-//                 return response.status(200).json({ product: result });
-//             })
-//             .catch(err => {
-//                 return response.status(500).json({ error: "product are not available" });
-//             })
-//     }
-//     catch (err) {
-//         return response.status(500).json({ error: "Internal server error" });
-//     }
-// }
-
-//--------
-
-export const fetchProductByUserId = async (request, response, next) => {
-    try {
-        const userId = request.params.userId;
-
-        // Validate userId
-        const errors = validationResult(request);
-        if (!errors.isEmpty()) {
-            return response.status(400).json({ errors: errors.array() });
-        }
-        // Find products by sellerId
-        const products = await product.find({ sellerId: userId })
-            .populate({
-                path: 'sellerId',
-                select: '-password'
-            })
-            .populate({
-                path: 'review.userId',
-                select: '-password'
-            });
-
-        // Concatenate base URL with thumbnail and images for each product
-        const baseUrl = 'http://localhost:8000/images/';
-        const formattedProducts = products.map(product => ({
-            ...product._doc,
-            thumbnail: baseUrl + product.thumbnail,
-            images: product.images.map(image => baseUrl + image)
-        }));
-
-        return response.status(200).json({ products: formattedProducts });
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        return response.status(500).json({ error: 'Internal server error' });
-    }
-};
-
 export const fetchProductByName = async (request, response, next) => {
     try {
         let name = request.params.name;
@@ -212,15 +131,12 @@ export const fetchProductByName = async (request, response, next) => {
             return response.status(400).json({ errors: errors.array() });
         }
         await product.find({ productName: name }).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
             path: "review.userId",
             select: "-password",
         })
             .then(products => {
 
-                // Path concate 
+                //serverr Path concate 
                 const baseUrl = 'http://localhost:8000/images/';
                 const productsWithUrl = products.map(product => ({
                     ...product.toObject(),
@@ -241,14 +157,11 @@ export const fetchProductByName = async (request, response, next) => {
 export const fetchProductByCategory = async (request, response, next) => {
     try {
         let category = request.params.category;
-        const errors = await validationResult(category);
+        const errors = validationResult(category);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
         await product.find({ category: category }).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
             path: "review.userId",
             select: "-password",
         })
@@ -279,9 +192,6 @@ export const fetchProductByPrice = async (request, response, next) => {
             return response.status(400).json({ errors: errors.array() });
         }
         await product.find({ price: price }).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
             path: "review.userId",
             select: "-password",
         })
@@ -309,7 +219,7 @@ export const fetchProductByPrice = async (request, response, next) => {
 export const removeProductById = async (request, response, next) => {
     try {
         let id = request.params.id;
-        const errors = await validationResult(id);
+        const errors = validationResult(id);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() });
         }
@@ -346,11 +256,11 @@ export const removeProductByName = async (request, response, next) => {
 //-----
 export const updateProduct = async (request, response, next) => {
     try {
-        let { id, productName, description, price, quantity, weight, sellerId, discountPercentage, rating, brand, category, thumbnail, userId, userReview, date, shippingCost, commission } = request.body;
+        let { id, productName, description, price, quantity, weight, discountPercentage, rating, category, thumbnail, userId, userReview, date, shippingCost, commission } = request.body;
 
         let Product = await product.findOne({ _id: id });
         if (Product) {
-            await product.updateMany({ _id: id }, { productName, description, price, quantity, weight, sellerId, discountPercentage, rating, brand, thumbnail, review: [{ userId, userReview, date }], category, shippingCost, commission });
+            await product.updateMany({ _id: id }, { productName, description, price, quantity, weight, discountPercentage, rating, thumbnail, review: [{ userId, userReview, date }], category, shippingCost, commission });
 
             return response.status(200).json({ message: "product data successully updated" })
         }
@@ -375,9 +285,6 @@ export const searchProduct = async (request, response, next) => {
             price: { $gte: minPrice || 0, $lte: maxPrice || Infinity },
         };
         const products = await product.find(searchCriteria).populate({
-            path: "sellerId",
-            select: "-password",
-        }).populate({
             path: "review.userId",
             select: "-password",
         })
@@ -398,8 +305,7 @@ export const searchProduct = async (request, response, next) => {
     }
 };
 
-
-// Updating rating
+// Update rating
 export const rateProduct = async (request, response, next) => {
     try {
         const { productId, userId, rating } = request.body;
@@ -489,7 +395,6 @@ export const updateReview = async (request, response, next) => {
         return response.status(500).json({ error: 'Error occurred while updating review' });
     }
 };
-
 
 // Update image and thumbnail
 export const updateImages = async (request, response) => {
