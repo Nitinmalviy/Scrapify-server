@@ -31,6 +31,7 @@ export const register = async (request, response, next) => {
     request.body.password = hashedPassword;
     const user = await User.create(request.body);
     const token = generateToken(request.email);
+    console.log(token);
     return response.status(200).json({
       message: "User Registration Successfull",
       user: { ...user.toObject(), password: undefined },
