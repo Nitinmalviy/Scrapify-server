@@ -1,0 +1,175 @@
+{
+  "User Collections": {
+    "_id": "ObjectId(-------)",
+    "username": "Nitin",
+    "password": "1233456",
+    "profile": "String",
+    "gender": "String",
+    "isActive": "boolean/false",
+    "isBlock": "bollean/false",
+    "location": "String",
+    "role": "(enum : vandor,Customer])"
+  },
+
+  "Product Collections": {
+    "product_name": "String",
+    "description": "String",
+    "price": "String",
+    "quantity": "Number",
+    "weight": "Number",
+    "seller_id": "ref userId",
+    "category": "ref category",
+    "thumbnail": "String",
+    "images": "[String]",
+    "brand": "String",
+    "rating": "",
+    "review": [
+      {
+        "UserId": "ObjectId(-----------)",
+        "user_review": "String"
+      }
+    ],
+    "shiping cost": "Number",
+    "Comission": "Number",
+    "discountPercentage": "Number default : 0"
+  },
+
+  "Category": {
+    "_id": "ObjectId(-------)",
+    "categoryName": "smartphone"
+  },
+  "Scrap-Category": {
+    "_id": "ObjectId(-------)",
+    "Scrap-category": "Scrap-smartphone"
+  },
+  "scrapProducts":{
+    "_id": "ObjectId",
+    "title": "String",
+    "description": "String",
+    "category": "String",
+    "condition":"enum('good','medium','worst')",
+    "price": "Number",
+    "seller": {
+      "userId": "ObjectId",
+      "contact": "String"
+    },
+    "dimensions": {
+      "length": "Number",
+      "width": "Number",
+      "height": "Number"
+    },
+    "thumbnail": "String",
+    "images": "[String]",
+    "location": [
+        {
+          "city": "Indore",
+          "pincode": "42001",
+          "State": "M.P",
+          "landmark": "Near SBI BANK",
+          "Full Address": "xyz"
+        }
+      ],
+     "status":"enum('Done','pending')"
+  },
+  "Cart": {
+    "UserId": { "type": "ObjectId", "ref": "User", "required": true },
+    "CartItem": [
+      {
+        "ProductId": { "type": "ObjectId", "ref": "Product", "required": true },
+        "quantity": { "type": "Number", "default": 1 }
+      }
+    ],
+    "totalPrice": { "type": "Number", "default": 0 }
+  },
+
+  "Order": {
+    "UserId": { "type": "ObjectId", "ref": "User", "required": true },
+    "orderItems": [{ "ProductId": "ref Product" }],
+    "totalPrice": { "type": "Number", "required": true },
+    "createdAt": { "type": "Date", "default": "Date.now" },
+    "status": {
+      "type": "String",
+      "enum": ["pending", "processing", "completed", "cancelled"],
+      "default": "pending"
+    },
+    "Order-Price": "String"
+  },
+  "Notification": {
+    "userId": { "type": "ObjectId", "ref": "User", "required": "true" },
+    "message": { "type": "String", "required": "true" },
+    "type": {
+      "type": "String",
+      "enum": ["info", "warning", "error"],
+      "default": "info"
+    },
+    "read": { "type": "Boolean", "default": "false" },
+    "createdAt": { "type": "Date", "default": "Date.now" }
+  },
+  "ShippingAddress": {
+    "userId": { "type": "ObjectId", "ref": "User", "required": "true" },
+    "addressLine1": { "type": "String", "required": "true" },
+    "addressLine2": { "type": "String" },
+    "city": { "type": "String", "required": "true" },
+    "state": { "type": "String", "required": "true" },
+    "postalCode": { "type": "String", "required": "true" },
+    "country": { "type": "String", "required": "true" }
+  },
+  "Payment": {
+    "userId": { "type": "ObjectId", "ref": "User", "required": "true" },
+    "amount": { "type": "ObjectId", "required": "true", "ref": "Order" },
+    "paymentMethod": {
+      "type": "String",
+      "enum": ["creditCard", "debitCard", "Cash On Delevery", "Net-Banking"],
+      "required": "true"
+    },
+    "createdAt": { "type": "Date", "default": "Date.now" }
+  },
+  "Transection": {
+    "userId": { "type": "ObjectId", "ref": "User", "required": "true" },
+    "orderId": { "type": "ObjectId", "ref": "Order", "required": "true" },
+    "amount": { "type": "ObjectId", "required": "true", "ref": "Order" },
+    "paymentId": { "type": "ObjectId", "ref": "Payment", "required": "true" },
+    "status": {
+      "type": "String",
+      "enum": ["pending", "completed", "cancelled"],
+      "default": "pending"
+    },
+    "createdAt": { "type": "Date", "default": "Date.now" }
+  },
+  "Admin": {
+    "_id": { "type": "ObjectId", "required": true },
+    "adminname": { "type": "String", "required": true },
+    "password": { "type": "String", "required": true },
+    "email": { "type": "String", "required": true },
+    "createdAt": { "type": "Date", "default": "Date.now" },
+    "updatedAt": { "type": "Date", "default": "Date.now" }
+  },
+  "AdminNotification": {
+    "_id": { "type": "ObjectId", "required": true },
+    "message": { "type": "String", "required": true },
+    "createdAt": { "type": "Date", "default": "Date.now" },
+    "read": { "type": "Boolean", "default": false }
+  },
+  " Analytic": {
+    "_id": { "type": "ObjectId", "required": true },
+    "type": {
+      "type": "String",
+      "enum": ["UserActivity", "SalesPerformance", "SearchQueries", "Feedback"],
+      "required": true
+    },
+    "data": { "type": "Mixed", "required": true },
+    "createdAt": { "type": "Date", "default": "Date.now" }
+  },
+  "Admin Post": {
+    "_id": { "type": "ObjectId", "required": true },
+    "adminId": { "type": "ObjectId", "ref": "AdminUser", "required": true },
+    "title": { "type": "String", "required": true },
+    "content": { "type": "String", "required": true },
+    "type": {
+      "type": "String",
+      "enum": ["benefits", "blog", "video", "tips", "tricks", "creative"],
+      "required": true
+    },
+    "createdAt": { "type": "Date", "default": "Date.now" }
+  }
+}
